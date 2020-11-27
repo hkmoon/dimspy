@@ -115,11 +115,11 @@ class ThermoRaw:
         scan = self.run.GetCentroidStream(scan_id, False)
         if scan.Masses is not None:
             mz_ibn = list(
-                zip(scan.Masses, scan.Intensities, scan.Baselines, scan.Noises))  # SignalToNoise not available
+                zip(scan.Masses, scan.Intensities, scan.Resolutions, scan.Baselines, scan.Noises, scan.Charges))  # SignalToNoise not available
             mz_ibn.sort()
-            mzs, ints, baseline, noise = list(zip(*mz_ibn))
+            mzs, ints, resolution, baseline, noise, charges = list(zip(*mz_ibn))
         else:
-            mzs, ints, baseline, noise = [], [], [], []
+            mzs, ints, resolution, baseline, noise, charges = [], [], [], [], [], []
 
         if function_noise == "noise_packets" and len(ints) > 0:
             snr = [p.SignalToNoise for p in scan.GetCentroids()]
@@ -168,8 +168,10 @@ class ThermoRaw:
 
         if len(pl.mz) > 0:
             pl.add_attribute('snr', snr)
-            pl.add_attribute('noise', noise)
+            pl.add_attribute('resolution', resolution)
             pl.add_attribute('baseline', baseline)
+            pl.add_attribute('noise', noise)
+            pl.add_attribute('charges', charges)
 
         return pl
 
